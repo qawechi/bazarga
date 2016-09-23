@@ -1,1 +1,180 @@
-+function(a){"use strict";function b(b){this.$pins=b,this.tasks=[],this.timerId=null,this.deferred=new a.Deferred}function c(a){this.img=a,this.initialWidth=a.width,this.initialHeight=a.height}function d(b){return this.each(function(){var c=a(this),d=c.data("mystist.waterfall"),e="object"==typeof b&&b;d&&"string"!=typeof b&&d.destroy()&&(d=null),d||c.data("mystist.waterfall",d=new f(this,e)),"string"==typeof b&&d[b]()})}var e=e||{now:Date.now||function(){return(new Date).getTime()},throttle:function(a,b,c){var d,f,g,h=null,i=0;c||(c={});var j=function(){i=c.leading===!1?0:e.now(),h=null,g=a.apply(d,f),h||(d=f=null)};return function(){var k=e.now();i||c.leading!==!1||(i=k);var l=b-(k-i);return d=this,f=arguments,0>=l||l>b?(h&&(clearTimeout(h),h=null),i=k,g=a.apply(d,f),h||(d=f=null)):h||c.trailing===!1||(h=setTimeout(j,l)),g}},debounce:function(a,b,c){var d,f,g,h,i,j=function(){var k=e.now()-h;b>k&&k>=0?d=setTimeout(j,b-k):(d=null,c||(i=a.apply(g,f),d||(g=f=null)))};return function(){g=this,f=arguments,h=e.now();var k=c&&!d;return d||(d=setTimeout(j,b)),k&&(i=a.apply(g,f),g=f=null),i}}},f=function(b,c){this.$element=a(b),this.options=a.extend({},f.DEFAULTS,c),this.id=Math.random().toString().slice(2),this.$fakePin=null,this.$container=null,this.$pins=null,this.pinWidth=null,this.imgWidth=null,this.rights=[],this.tops=[],this.init().calculateWidth().calculatePosition().sail(),a(window).on("resize.mystist.waterfall"+this.id,e.debounce(a.proxy(function(){a(window).off("scroll.mystist.waterfall"+this.id),this.calculateWidth().calculatePosition().ship(g.getLoadedPins.call(this))},this),777))};f.VERSION="0.2.4",f.DEFAULTS={},f.prototype.init=function(){return this.initPins().initAttributes(),this},f.prototype.initPins=function(){var b=this.$element.children().length>0?this.$element.children().remove():a(this.$element.data("bootstrap-waterfall-template"));return b.each(function(){var b=a(this).find("img:eq(0)");b.length>0&&(a(this).data("bootstrap-waterfall-src",b.attr("src")),b.attr("src","data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="))}),this.$pins=b,this},f.prototype.initAttributes=function(){return this.$fakePin=this.$pins.first().clone(),this.$container=a("<div />").css("position","relative"),this.$element.html(this.$container),this},f.prototype.calculateWidth=function(){var a=this.$fakePin.clone();return this.$container.append(a.css("opacity",0)),this.pinWidth=a.outerWidth(!0),this.imgWidth=a.find("img:eq(0)").css("width","100%").width(),a.remove(),this},f.prototype.calculatePosition=function(){for(var a=parseInt(this.$container.width()/this.pinWidth,10),b=[],c=[],d=0;a>d;d++)b.push(d*this.pinWidth),c.push(0);return this.rights=b,this.tops=c,this},f.prototype.sail=function(){var c=g.getToLoadPins.call(this),d=new b(c);return d.load().run().deferred.done(a.proxy(function(){this.ship(c)},this)),this},f.prototype.ship=function(b){return this.render(b).updateHeight(),a(window).on("scroll.mystist.waterfall"+this.id,e.throttle(a.proxy(function(){g.isWantMore.call(this)&&(a(window).off("scroll.mystist.waterfall"+this.id),this.sail())},this),500)),this},f.prototype.render=function(b){var c=this;return b.each(function(){c.placePin(a(this))}),this},f.prototype.placePin=function(a){var b=h.indexOf(this.tops,Math.min.apply(null,this.tops)),c=g.getPosition.call(this,b);return a.css({position:"absolute",right:c.right,top:c.top}),a.data("bootstrap-waterfall-pin")&&g.setImageHeight.call(this,a),a.data("bootstrap-waterfall-src")&&(g.makeImageAvailable.call(this,a),a.removeData("bootstrap-waterfall-src")),this.$container.append(a),g.updatePosition.call(this,b,a),this},f.prototype.updateHeight=function(){var a=h.indexOf(this.tops,Math.max.apply(null,this.tops));return this.$container.height(this.tops[a]),this},f.prototype.destroy=function(){return a(window).off("scroll.mystist.waterfall"+this.id),a(window).off("resize.mystist.waterfall"+this.id),this.$element.empty().removeData("mystist.waterfall"),this};var g={getToLoadPins:function(){var b=parseInt(this.$container.width()/this.pinWidth,10),c=3*b,d=this.$pins.map(function(){return a(this).find("img").length>0&&a(this).data("bootstrap-waterfall-src")?a(this):void 0});return d.slice(0,c)},getLoadedPins:function(){var b=this.$pins.map(function(){return a(this).find("img").length>0&&!a(this).data("bootstrap-waterfall-src")?a(this):void 0});return b},isWantMore:function(){return a(window).scrollTop()+a(window).height()>h.getDocHeight()-377},getPosition:function(a){var b={right:this.rights[a],top:this.tops[a]};return b},setImageHeight:function(a){var b=a.data("bootstrap-waterfall-pin"),c=this.imgWidth*b.img.height/b.img.width;a.find("img:eq(0)").css({height:c,width:"auto"})},makeImageAvailable:function(a){a.find("img:eq(0)").attr("src",a.data("bootstrap-waterfall-src"))},updatePosition:function(a,b){this.tops[a]+=b.outerHeight(!0)}};b.prototype.load=function(){var b=this;return this.$pins.each(function(){var d=new Image;d.src=a(this).data("bootstrap-waterfall-src");var e=new c(d);b.tasks.push(e),a(this).data("bootstrap-waterfall-pin",e)}),this},b.prototype.run=function(){return this.timerId=setInterval(a.proxy(function(){this.isDone()?this.stop():this.check()},this),40),this},b.prototype.isDone=function(){return 0===this.tasks.length},b.prototype.stop=function(){clearInterval(this.timerId),this.timerId=null,this.deferred.resolve()},b.prototype.check=function(){for(var a=0;a<this.tasks.length;a++){var b=this.tasks[a];b.isLoaded()&&this.tasks.splice(a--,1)}},c.prototype.isLoaded=function(){return this.img.width!==this.initialWidth||this.img.height!==this.initialHeight||this.img.width*this.img.height>1024};var h={getDocHeight:function(){var a=document;return Math.max(a.body.scrollHeight,a.documentElement.scrollHeight,a.body.offsetHeight,a.documentElement.offsetHeight,a.body.clientHeight,a.documentElement.clientHeight)},indexOf:function(a,b){if(null==a)return-1;for(var c=0,d=a.length;d>c;c++)if(a[c]===b)return c;return-1}},i=a.fn.waterfall;a.fn.waterfall=d,a.fn.waterfall.Constructor=f,a.fn.waterfall.noConflict=function(){return a.fn.waterfall=i,this}}(jQuery);
++ function(t) {
+    "use strict";
+
+    function i(i) {
+        this.$pins = i, this.tasks = [], this.timerId = null, this.deferred = new t.Deferred
+    }
+
+    function e(t) {
+        this.img = t, this.initialWidth = t.width, this.initialHeight = t.height
+    }
+
+    function n(i) {
+        return this.each(function() {
+            var e = t(this),
+                n = e.data("mystist.waterfall"),
+                s = "object" == typeof i && i;
+            n && "string" != typeof i && n.destroy() && (n = null), n || e.data("mystist.waterfall", n = new o(this, s)), "string" == typeof i && n[i]()
+        })
+    }
+    var s = s || {
+            now: Date.now || function() {
+                return (new Date).getTime()
+            },
+            throttle: function(t, i, e) {
+                var n, o, r, a = null,
+                    h = 0;
+                e || (e = {});
+                var l = function() {
+                    h = e.leading === !1 ? 0 : s.now(), a = null, r = t.apply(n, o), a || (n = o = null)
+                };
+                return function() {
+                    var u = s.now();
+                    h || e.leading !== !1 || (h = u);
+                    var c = i - (u - h);
+                    return n = this, o = arguments, 0 >= c || c > i ? (a && (clearTimeout(a), a = null), h = u, r = t.apply(n, o), a || (n = o = null)) : a || e.trailing === !1 || (a = setTimeout(l, c)), r
+                }
+            },
+            debounce: function(t, i, e) {
+                var n, o, r, a, h, l = function() {
+                    var u = s.now() - a;
+                    i > u && u >= 0 ? n = setTimeout(l, i - u) : (n = null, e || (h = t.apply(r, o), n || (r = o = null)))
+                };
+                return function() {
+                    r = this, o = arguments, a = s.now();
+                    var u = e && !n;
+                    return n || (n = setTimeout(l, i)), u && (h = t.apply(r, o), r = o = null), h
+                }
+            }
+        },
+        o = function(i, e) {
+            this.$element = t(i), this.options = t.extend({}, o.DEFAULTS, e), this.id = Math.random().toString().slice(2), this.$fakePin = null, this.$container = null, this.$pins = null, this.pinWidth = null, this.imgWidth = null, this.rights = [], this.tops = [], this.init().calculateWidth().calculatePosition().sail(), t(window).on("resize.mystist.waterfall" + this.id, s.debounce(t.proxy(function() {
+                t(window).off("scroll.mystist.waterfall" + this.id), this.calculateWidth().calculatePosition().ship(r.getLoadedPins.call(this))
+            }, this), 777))
+        };
+    o.VERSION = "0.2.4", o.DEFAULTS = {}, o.prototype.init = function() {
+        return this.initPins().initAttributes(), this
+    }, o.prototype.initPins = function() {
+        var i = this.$element.children().length > 0 ? this.$element.children().remove() : t(this.$element.data("bootstrap-waterfall-template"));
+        return i.each(function() {
+            var i = t(this).find("img:eq(0)");
+            i.length > 0 && (t(this).data("bootstrap-waterfall-src", i.attr("src")), i.attr("src", "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="))
+        }), this.$pins = i, this
+    }, o.prototype.initAttributes = function() {
+        return this.$fakePin = this.$pins.first().clone(), this.$container = t("<div />").css("position", "relative"), this.$element.html(this.$container), this
+    }, o.prototype.calculateWidth = function() {
+        var t = this.$fakePin.clone();
+        return this.$container.append(t.css("opacity", 0)), this.pinWidth = t.outerWidth(!0), this.imgWidth = t.find("img:eq(0)").css("width", "100%").width(), t.remove(), this
+    }, o.prototype.calculatePosition = function() {
+        for (var t = parseInt(this.$container.width() / this.pinWidth, 10), i = [], e = [], n = 0; t > n; n++) i.push(n * this.pinWidth), e.push(0);
+        return this.rights = i, this.tops = e, this
+    }, o.prototype.sail = function() {
+        var e = r.getToLoadPins.call(this),
+            n = new i(e);
+        return n.load().run().deferred.done(t.proxy(function() {
+            this.ship(e)
+        }, this)), this
+    }, o.prototype.ship = function(i) {
+        return this.render(i).updateHeight(), t(window).on("scroll.mystist.waterfall" + this.id, s.throttle(t.proxy(function() {
+            r.isWantMore.call(this) && (t(window).off("scroll.mystist.waterfall" + this.id), this.sail())
+        }, this), 500)), this
+    }, o.prototype.render = function(i) {
+        var e = this;
+        return i.each(function() {
+            e.placePin(t(this))
+        }), this
+    }, o.prototype.placePin = function(t) {
+        var i = a.indexOf(this.tops, Math.min.apply(null, this.tops)),
+            e = r.getPosition.call(this, i);
+        return t.css({
+            position: "absolute",
+            right: e.right,
+            top: e.top
+        }), t.data("bootstrap-waterfall-pin") && r.setImageHeight.call(this, t), t.data("bootstrap-waterfall-src") && (r.makeImageAvailable.call(this, t), t.removeData("bootstrap-waterfall-src")), this.$container.append(t), r.updatePosition.call(this, i, t), this
+    }, o.prototype.updateHeight = function() {
+        var t = a.indexOf(this.tops, Math.max.apply(null, this.tops));
+        return this.$container.height(this.tops[t]), this
+    }, o.prototype.destroy = function() {
+        return t(window).off("scroll.mystist.waterfall" + this.id), t(window).off("resize.mystist.waterfall" + this.id), this.$element.empty().removeData("mystist.waterfall"), this
+    };
+    var r = {
+        getToLoadPins: function() {
+            var i = parseInt(this.$container.width() / this.pinWidth, 10),
+                e = 3 * i,
+                n = this.$pins.map(function() {
+                    return t(this).find("img").length > 0 && t(this).data("bootstrap-waterfall-src") ? t(this) : void 0
+                });
+            return n.slice(0, e)
+        },
+        getLoadedPins: function() {
+            var i = this.$pins.map(function() {
+                return t(this).find("img").length > 0 && !t(this).data("bootstrap-waterfall-src") ? t(this) : void 0
+            });
+            return i
+        },
+        isWantMore: function() {
+            return t(window).scrollTop() + t(window).height() > a.getDocHeight() - 377 ? !0 : !1
+        },
+        getPosition: function(t) {
+            var i = {
+                right: this.rights[t],
+                top: this.tops[t]
+            };
+            return i
+        },
+        setImageHeight: function(t) {
+            var i = t.data("bootstrap-waterfall-pin"),
+                e = this.imgWidth * i.img.height / i.img.width;
+            t.find("img:eq(0)").css({
+                height: e,
+                width: "auto"
+            })
+        },
+        makeImageAvailable: function(t) {
+            t.find("img:eq(0)").attr("src", t.data("bootstrap-waterfall-src"))
+        },
+        updatePosition: function(t, i) {
+            this.tops[t] += i.outerHeight(!0)
+        }
+    };
+    i.prototype.load = function() {
+        var i = this;
+        return this.$pins.each(function() {
+            var n = new Image;
+            n.src = t(this).data("bootstrap-waterfall-src");
+            var s = new e(n);
+            i.tasks.push(s), t(this).data("bootstrap-waterfall-pin", s)
+        }), this
+    }, i.prototype.run = function() {
+        return this.timerId = setInterval(t.proxy(function() {
+            this.isDone() ? this.stop() : this.check()
+        }, this), 40), this
+    }, i.prototype.isDone = function() {
+        return 0 === this.tasks.length ? !0 : !1
+    }, i.prototype.stop = function() {
+        clearInterval(this.timerId), this.timerId = null, this.deferred.resolve()
+    }, i.prototype.check = function() {
+        for (var t = 0; t < this.tasks.length; t++) {
+            var i = this.tasks[t];
+            i.isLoaded() && this.tasks.splice(t--, 1)
+        }
+    }, e.prototype.isLoaded = function() {
+        return this.img.width !== this.initialWidth || this.img.height !== this.initialHeight || this.img.width * this.img.height > 1024 ? !0 : !1
+    };
+    var a = {
+            getDocHeight: function() {
+                var t = document;
+                return Math.max(t.body.scrollHeight, t.documentElement.scrollHeight, t.body.offsetHeight, t.documentElement.offsetHeight, t.body.clientHeight, t.documentElement.clientHeight)
+            },
+            indexOf: function(t, i) {
+                if (null == t) return -1;
+                for (var e = 0, n = t.length; n > e; e++)
+                    if (t[e] === i) return e;
+                return -1
+            }
+        },
+        h = t.fn.waterfall;
+    t.fn.waterfall = n, t.fn.waterfall.Constructor = o, t.fn.waterfall.noConflict = function() {
+        return t.fn.waterfall = h, this
+    }
+}(jQuery);
