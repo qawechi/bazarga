@@ -1,0 +1,33 @@
+body {
+  padding-top: 50px;
+}
+
+.carousel-inner {
+  background-image: url("../assets/img/pattern.png");
+  background-repeat: repeat;
+}
+
+.carousel .item img {
+  min-width: 100%;
+}
+
+.carousel-caption {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.breadcrumb > li + li:before {
+  content: "»\00a0";
+}
+
+.thumbnail .caption {
+  text-align: center;
+}
+
+.thumbnail img {
+  min-width: 100%;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+}
